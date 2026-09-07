@@ -25,28 +25,31 @@ Verified in prep (examples):
 
 ### 2. Mapper
 
-Convert LI.FI `transactionRequest` into KeeperHub direct-execution arguments:
+LI.FI returns raw `transactionRequest` (`to`, `data`, `value`, `chainId`).
+KeeperHub `POST /api/execute/contract-call` needs `functionName` + ABI (no raw `data` field).
 
-- Network / chain id alignment with KeeperHub’s naming
-- `to`, calldata `data`, native `value`
+**Two-step mapping** (see `src/mapper/lifi-to-keeperhub.ts` + `decode-lifi-call.ts`):
+
+1. **Approve (when `estimate.approvalAddress` is set)** — map to a standard ERC-20 `approve(spender, amount)` contract-call against the from-token.
+2. **Swap** — decode LI.FI diamond calldata with embedded V3/Generic facet ABIs (`src/abi/lifi-facets.ts`), then `POST /api/execute/contract-call`.
+
+**Simulate (Phase 2):** `pnpm run:sim` calls the same contract-call endpoint with `"simulate": true` (boolean) for each step — no broadcast, no audit row. Requires a configured KeeperHub org wallet (`from` address).
+
+Also:
+
+- Align chain id with KeeperHub’s naming
 - Preserve quote `id` in run metadata for the audit story
-
-Multi-step LI.FI flows: execute in order; stop on first failure; surface which step failed.
+- Multi-step LI.FI flows: execute in order; stop on first failure; surface which step failed
 
 ### 3. Execution layer (KeeperHub)
 
-Preferred surfaces (any that we wire for the demo):
+HTTP Direct Execution (`POST /api/execute/contract-call`), same as simulate:
 
-- MCP: `execute_contract_call`, `execute_transfer` (if native), `get_direct_execution_status`
-- Or HTTP equivalents used by `kh` / API client
-
-Always:
-
-1. Optional `simulate=true` (or dry-run) before live
-2. Confirm gate (CLI prompt or explicit `--confirm`)
-3. Unique `Idempotency-Key` per logical step
-4. Poll until completed / failed / unconfirmed policy documented
-5. Persist: quote id, execution id, `transactionLink`
+1. Optional preflight `simulate: true` (`pnpm run:sim` / `run:exec` default)
+2. Confirm gate (`REQUIRE_CONFIRM` + `--confirm` or interactive `y`)
+3. Broadcast without `simulate`, with `Idempotency-Key: lifi-x-kh:{quoteId}:{kind}:{runId}`
+4. Poll `GET /api/execute/{executionId}/status` until terminal (`completed` / `failed` / `unconfirmed`), honoring `X-Poll-Interval-Hint`
+5. Persist artifact under `artifacts/run-*.json` (quote id, execution ids, `transactionLink`)
 
 ### 4. Interface
 

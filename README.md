@@ -71,26 +71,34 @@ See [docs/HACKATHON.md](docs/HACKATHON.md), [docs/ARCHITECTURE.md](docs/ARCHITEC
 
 ## Status
 
-Scaffold and documentation in place. Implementation next:
+Phases 0–3 + dashboard in place. Submission polish next:
 
-- [ ] LI.FI quote client
-- [ ] Map `transactionRequest` → KeeperHub execute
-- [ ] Simulate + confirm gate
-- [ ] Idempotent execute + status poll
-- [ ] CLI (and optional thin UI)
-- [ ] Demo video + sample run artifacts
+- [x] Phase 0: toolchain, env, LI.FI + KeeperHub smoke
+- [x] Phase 1: LI.FI quote CLI (flags, steps, approval hint)
+- [x] Phase 2: map approve + decode swap → KeeperHub `simulate: true`
+- [x] Phase 3: confirm gate → idempotent execute + status poll + artifacts
+- [x] Dashboard UI (local API + Vite)
+- [ ] Demo video + DoraHacks submit
 
 ---
 
-## Quick start (when implemented)
+## Quick start
 
 ```bash
 cp .env.example .env
-# fill KeeperHub + wallet settings
+# Required: KEEPERHUB_API_KEY (kh_ org key)
+# Set LIFI_FROM_ADDRESS to your KeeperHub org wallet (must match sim "from")
+# Fund that wallet with Base USDC (+ ETH for gas). Keep amount ≤ $100 stablecoin/tx.
 pnpm install
-pnpm quote    # LI.FI quote only
-pnpm run:sim  # quote + KeeperHub simulate
-pnpm run:exec # quote + review + execute
+
+# CLI
+pnpm quote
+pnpm run:sim
+pnpm run:exec --confirm
+
+# Dashboard (two terminals)
+pnpm api          # http://localhost:8787
+pnpm dashboard    # http://localhost:5173
 ```
 
 ---
@@ -99,6 +107,8 @@ pnpm run:exec # quote + review + execute
 
 - [Hackathon brief and goals](docs/HACKATHON.md)
 - [Architecture](docs/ARCHITECTURE.md)
+- [Features](docs/FEATURES.md)
+- [Context / how not to lose](docs/CONTEXT.md)
 - [Submission checklist](docs/SUBMISSION.md)
 
 ## License
