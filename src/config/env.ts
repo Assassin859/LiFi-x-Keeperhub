@@ -86,7 +86,7 @@ export function loadKeeperhubEnv(): AppEnv["keeperhub"] {
 }
 
 /**
- * REQUIRE_CONFIRM is reserved for Phase 3 `run:exec` (human gate before broadcast).
+ * REQUIRE_CONFIRM gates `run:exec` (human confirm before broadcast).
  * Quote / smoke paths do not prompt.
  */
 export function loadSafetyEnv(): AppEnv["safety"] {

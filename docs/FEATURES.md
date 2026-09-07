@@ -24,6 +24,7 @@ Modeled after strong submissions that lead with a clear problem, a measurable cl
 
 - Approve step when LI.FI requires allowance (`approvalAddress`)
 - Decode LI.FI diamond calldata into KeeperHub `contract-call` shape (`functionName` + ABI)
+- Named tuple args for KeeperHub (e.g. `_swapData` as objects, not bare arrays)
 - Multi-step order preserved; stop on first failure
 
 ### Simulate → confirm → execute → status
@@ -38,6 +39,10 @@ Modeled after strong submissions that lead with a clear problem, a measurable cl
 
 - CLI: `pnpm quote`, `pnpm run:sim`, `pnpm run:exec --confirm`
 - Local dashboard + API (`pnpm api` / `pnpm dashboard`) for demo UX
+
+### Live proof
+
+Base mainnet USDC → WETH: quote id + KeeperHub execution ids + Basescan links in [PROOF.md](PROOF.md) and `fixtures/proof-run.json`.
 
 ### Explicit non-goals (this repo)
 
@@ -69,7 +74,19 @@ Not another Uniswap workflow node — a Direct Execution / Wallet product surfac
 
 **Why:** agents and orgs stop hand-building DEX calldata for the most common money movement.
 
-### 2. MCP `execute_swap`
+### 2. Stablecoin → gas top-up
+
+One-click / one API: convert a small USDC (or other stable) amount into native ETH for the org wallet.
+
+| Piece | Intent |
+|---|---|
+| UI | Wallet fund screen: “Top up gas from USDC” |
+| API / MCP | Named action over the same swap path |
+| Reality check | Sponsorship pays **fees only**; it does not create spendable ETH |
+
+**Why:** the failure mode we hit in production — USDC funded, little/no ETH — without forcing integrators to assemble DEX calldata.
+
+### 3. MCP `execute_swap`
 
 MCP tool over the same swap route so agents call a named tool instead of raw `execute_contract_call` with hand-assembled args.
 
@@ -86,13 +103,13 @@ What good main-track submissions emphasize:
 | Live partner, not a toy wrapper | LI.FI / `li.quest` (confirmed valid partner type) |
 | KeeperHub is the execution ledger | Direct Execution API + status + audit; we do not re-compute settlement |
 | Product honesty | Quote is required; no invented route |
-| Measurable claim | Quote id + KeeperHub execution id + explorer link side by side |
+| Measurable claim | Quote id + KeeperHub execution id + explorer link side by side ([PROOF.md](PROOF.md)) |
 | Upstream filings optional | Feature ask above; not required for main-track submit |
 
 gavel’s bar also includes **refusal as product** and a **re-derivable survey**. Optional follow-ups for us:
 
 - Named refusal reasons (no route, sim revert, confirm denied, mid-step fail, chain not allowed)
-- A small re-derivable script that checks README claims against a committed fixture (quote shape + mapped steps)
+- A small re-derivable script that checks README claims against `fixtures/proof-run.json`
 
 ---
 
@@ -101,6 +118,6 @@ gavel’s bar also includes **refusal as product** and a **re-derivable survey**
 | Track | Where | Features |
 |---|---|---|
 | Main — live integration | This repo | Quote → map → sim → confirm → exec → status |
-| Bounty — KeeperHub feature | Separate BUIDL / PR | First-class Swap/Bridge + MCP `execute_swap` (if green-lit) |
+| Bounty — KeeperHub feature | Separate BUIDL / PR | Swap/Bridge + gas top-up + MCP `execute_swap` (if green-lit) |
 
-See [HACKATHON.md](HACKATHON.md), [ARCHITECTURE.md](ARCHITECTURE.md), [SUBMISSION.md](SUBMISSION.md).
+See [HACKATHON.md](HACKATHON.md), [ARCHITECTURE.md](ARCHITECTURE.md), [COMPETITORS.md](COMPETITORS.md), [SUBMISSION.md](SUBMISSION.md).

@@ -51,9 +51,11 @@ Claim: 50 Direct Execution runs, zero failures; `GET /api/analytics/runs` as led
 1. Clear split of duties one-liner  
 2. Named refusals  
 3. One re-derivable claim (fixture + script or N/N run artifacts)  
-4. Say ugly limits first (testnet/mainnet, caps)  
+4. Say ugly limits first (caps, sponsorship ≠ ETH balance)  
 5. Ship triad: repo + live/demo + video + execution proof  
 6. Compete on **LI.FI → KeeperHub settle**, not on Safe stuck-tx  
+
+Full write-up: [COMPETITORS.md](COMPETITORS.md).
 
 ---
 
@@ -62,6 +64,12 @@ Claim: 50 Direct Execution runs, zero failures; `GET /api/analytics/runs` as led
 **LI.FI plans the route. KeeperHub settles it.**
 
 Pipeline: LI.FI `/quote` → map approve + swap → simulate → confirm → `contract-call` + Idempotency-Key → status poll → artifacts (quote id, execution id, explorer link).
+
+**Live proof (Base mainnet):** quote `c10dd97b-ee60-47f6-b7b7-9b7beafb971d:0` → approve + swap settled. Primary explorer link:
+
+https://basescan.org/tx/0x77833f89ea827e7b6982257975e1fb4a763da40b924027bcfecae2114f86bcb8
+
+Details: [PROOF.md](PROOF.md), fixture: `fixtures/proof-run.json`.
 
 Remove test: break LI.FI quote → no calldata → nothing for KeeperHub to send.
 
@@ -73,24 +81,28 @@ See [FEATURES.md](FEATURES.md), [ARCHITECTURE.md](ARCHITECTURE.md), [HACKATHON.m
 
 Do **not** try to beat gavel at Safe + survey. Beat them on a **bigger live partner + a finished, checkable pipeline**.
 
-### This week (main track — win condition)
+### Remaining (main track)
 
-1. **Commit and push** `src/`, `web/`, lockfile, docs — judges cannot score what is not on GitHub.  
-2. **One real KeeperHub settle** — e.g. Base USDC → ETH/WETH, small amount. Persist quote id + execution id + explorer link under `artifacts/`.  
-3. **Demo video (2–3 min)** — quote JSON → sim → confirm → exec → explorer. Say the one-liner and the remove test.  
-4. **Submit DoraHacks main BUIDL early** — editable until the deadline; empty form loses by default.  
-5. **Optional gavel-bar polish** — named refusal reasons; small rederive/fixture check. Do not start a Safe product.
+1. **Demo video (2–3 min)** — quote JSON → sim → confirm → exec → explorer. Say the one-liner and the remove test.  
+2. **Submit DoraHacks main BUIDL early** — editable until the deadline; empty form loses by default. Link repo + **swap** tx + video.  
+3. **Optional gavel-bar polish** — named refusal reasons; small rederive script over `fixtures/proof-run.json`. Do not start a Safe product.
+
+### Already done
+
+- Code pushed (`src/`, `web/`, docs, lockfile)  
+- One real KeeperHub settle on Base mainnet (quote id + execution ids + explorer)  
+- Local dashboard for demo UX  
 
 ### Cheap insurance (parallel)
 
 - Second DoraHacks BUIDL for **bounty** pointing at KeeperHub PRs (#2213 / #2215 / #2217).  
-- Discord ask for first-class Swap/Bridge + MCP `execute_swap` only **after** main demo assets exist (optional upside, not the win condition).
+- Discord ask for first-class Swap/Bridge + stablecoin→gas top-up + MCP `execute_swap` only **after** main demo assets exist (optional upside, not the win condition).
 
 ### Do not do
 
 - Rebuild gavel or chase their survey story  
 - Start KeeperHub Swap/Bridge epic before submit assets exist  
-- Leave glue uncommitted while polishing Discord pitches  
+- Re-broadcast large amounts just to “feel busy” — one clear proof is enough  
 
 ---
 
@@ -99,13 +111,13 @@ Do **not** try to beat gavel at Safe + survey. Beat them on a **bigger live part
 | Them | Us |
 |---|---|
 | Rare Safe stuck-tx niche, measured honestly | High-volume path: **swap/bridge aggregator (LI.FI)** |
-| Sepolia exec, Base survey | Live LI.FI quote + KeeperHub broadcast (prefer mainnet Base if funded) |
+| Sepolia exec, Base survey | **Base mainnet** approve + swap via KeeperHub |
 | Refusal as product | Same — plus **quote id ↔ execution id ↔ explorer** side by side |
 
 ---
 
 ## Immediate next action
 
-Commit + push this repo’s implementation, run one `pnpm run:exec --confirm`, put the three proof links in the README / artifacts. Everything else is secondary until that exists.
+Record the demo video and submit the DoraHacks main BUIDL with [PROOF.md](PROOF.md) links. Everything else is secondary.
 
 **Contacts:** DoraHacks Agent Economy; KeeperHub Discord for logistics / optional feature greenlight only after demo is recorded.

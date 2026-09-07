@@ -83,11 +83,13 @@ Naive “signed but not executed” is almost always wrong because Safe nonces a
 | Them | Us (this repo) |
 |---|---|
 | Rare Safe stuck-tx niche, measured honestly | High-volume path: **LI.FI swap/bridge aggregator** |
-| Sepolia exec, Base survey | Live LI.FI quote + KeeperHub broadcast (prefer mainnet Base if funded) |
+| Sepolia exec, Base survey | **Base mainnet** settle proven (approve + swap) — see [PROOF.md](PROOF.md) |
 | Refusal as product | Same pattern — plus **quote id ↔ execution id ↔ explorer** side by side |
 | Partner = Safe ecosystem | Partner = LI.FI / `li.quest` (confirmed valid for main track) |
 
 **Do not try to beat gavel at Safe + survey.** Beat them on a bigger live partner and a finished, checkable pipeline.
+
+**Re-scan Discord** before final submit in case a closer LI.FI / aggregator rival appears.
 
 ---
 
@@ -104,12 +106,14 @@ Naive “signed but not executed” is almost always wrong because Safe nonces a
 
 ## Win condition for this repo
 
-1. Code pushed (`src/`, `web/`, artifacts)  
-2. One real KeeperHub settle with quote id + execution id + explorer link  
-3. Demo video stating remove test: no LI.FI quote → nothing to send  
-4. DoraHacks **main** BUIDL submitted (editable until deadline)  
-5. Optional: named refusals + small rederive/fixture (gavel bar without Safe niche)  
+| # | Item | Status |
+|---|---|---|
+| 1 | Code pushed (`src/`, `web/`, fixtures, docs) | Done on `fix/protocol-execution-id` |
+| 2 | One real KeeperHub settle with quote id + execution id + explorer | **Done** — [PROOF.md](PROOF.md) |
+| 3 | Demo video stating remove test: no LI.FI quote → nothing to send | **Todo** |
+| 4 | DoraHacks **main** BUIDL submitted (editable until deadline) | **Todo** |
+| 5 | Optional: named refusals + small rederive/fixture | Partial — `fixtures/proof-run.json` |
 
-Bounty = separate BUIDL. Swap/Bridge platform ask = Discord greenlight after demo exists — not the main-track win condition.
+Bounty = separate BUIDL. First-class Swap/Bridge + gas top-up platform ask = Discord greenlight after demo exists — not the main-track win condition.
 
 See [CONTEXT.md](CONTEXT.md), [FEATURES.md](FEATURES.md), [SUBMISSION.md](SUBMISSION.md).

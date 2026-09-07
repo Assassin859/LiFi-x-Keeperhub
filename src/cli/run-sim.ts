@@ -168,7 +168,7 @@ Options (optional; fall back to .env) match \`pnpm quote\`:
         );
         console.error(`  ${message}`);
         console.error(
-          `  Phase 3 execute will broadcast approve then swap so allowance applies.`,
+          `  run:exec will broadcast approve then swap so allowance applies.`,
         );
         continue;
       }

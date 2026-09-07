@@ -24,6 +24,8 @@ Requirement (paraphrased): plug KeeperHub into a **live** project (users, deploy
 
 Our bounty candidates live on Assassin859 forks / KeeperHub PRs (e.g. protocol execution id, MCP idempotency, For Each stop-on-failure). Demo for bounty: 60–90s screen capture of the feature; tx link only if the feature is onchain.
 
+Optional product asks (not required for main): first-class Swap/Bridge, stablecoin→gas top-up, MCP `execute_swap` — see [FEATURES.md](FEATURES.md).
+
 ## Our goal
 
 1. Ship a **credible main-track integration** judges will not file as “another NL agent.”
@@ -32,20 +34,22 @@ Our bounty candidates live on Assassin859 forks / KeeperHub PRs (e.g. protocol e
 
 ## Success criteria (main)
 
-- LI.FI `/quote` is on the critical path (real `transactionRequest`).
-- KeeperHub performs simulate and/or execute; explorer shows the tx.
-- README and video state the split of duties clearly.
-- “Remove LI.FI” test: pipeline cannot invent a swap without a quote.
+| Criterion | Status |
+|---|---|
+| LI.FI `/quote` on the critical path | Done |
+| KeeperHub simulate and/or execute; explorer shows the tx | **Done (Base mainnet)** — [PROOF.md](PROOF.md) |
+| README and video state the split of duties | README done; **video todo** |
+| “Remove LI.FI” test: no inventing a swap without a quote | Documented; show in video |
 
 ## Judging rubric (main) — how we map
 
 | Criterion | Our answer |
 |---|---|
 | Integration depth | LI.FI-specific quote mapping and step handling |
-| Execution through KeeperHub | Required; tx + execution id |
+| Execution through KeeperHub | Required; tx + execution id ([PROOF.md](PROOF.md)) |
 | Reliability / observability | Simulate, idempotency keys, status poll, failure stop |
 | Usefulness | Apps that already use LI.FI quotes get production-grade settlement |
-| DX / code quality | Typed client, env-based config, reproducible CLI |
+| DX / code quality | Typed client, env-based config, CLI + local dashboard |
 
 ## What we are not building
 
@@ -56,8 +60,8 @@ Our bounty candidates live on Assassin859 forks / KeeperHub PRs (e.g. protocol e
 
 ## Timeline (internal)
 
-| Window | Focus |
-|---|---|
-| Early | Quote client + one same-chain Base execute via KeeperHub |
-| Mid | Cross-chain path, sim gate, failures, README |
-| Late | Demo video, submission form, pitch dry-run |
+| Window | Focus | Status |
+|---|---|---|
+| Early | Quote client + same-chain Base execute via KeeperHub | Done |
+| Mid | Sim gate, mapper fixes, dashboard, docs | Done |
+| Late | Demo video, DoraHacks form, pitch dry-run | **In progress** |

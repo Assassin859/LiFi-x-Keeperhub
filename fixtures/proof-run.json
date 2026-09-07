@@ -1,0 +1,35 @@
+{
+  "runId": "6805dd7d-eaf8-40d4-8c37-7cc31b6dafb5",
+  "quoteId": "c10dd97b-ee60-47f6-b7b7-9b7beafb971d:0",
+  "fromAddress": "0xc63a364f8bbaa6be263f577762e7c180a68b9fac",
+  "network": "base",
+  "chainId": 8453,
+  "route": "USDC → WETH (same-chain, LI.FI)",
+  "amount": "1000000",
+  "amountHuman": "1 USDC",
+  "steps": [
+    {
+      "kind": "approve",
+      "functionName": "approve",
+      "executionId": "7zdrn0o95852nv1iiur18",
+      "status": "completed",
+      "transactionHash": "0x4bfcad4ea65547526e54d9e6c431e4aba4af7205a0fbdef30018640bc7f28ebc",
+      "transactionLink": "https://basescan.org/tx/0x4bfcad4ea65547526e54d9e6c431e4aba4af7205a0fbdef30018640bc7f28ebc"
+    },
+    {
+      "kind": "swap",
+      "functionName": "swapTokensMultipleV3ERC20ToERC20",
+      "selector": "0x5fd9ae2e",
+      "executionId": "05lj3m301cqcrhdrd6yf7",
+      "status": "completed",
+      "transactionHash": "0x77833f89ea827e7b6982257975e1fb4a763da40b924027bcfecae2114f86bcb8",
+      "transactionLink": "https://basescan.org/tx/0x77833f89ea827e7b6982257975e1fb4a763da40b924027bcfecae2114f86bcb8"
+    }
+  ],
+  "createdAt": "2026-09-07T10:38:28.141Z",
+  "notes": [
+    "Broadcast via KeeperHub Direct Execution POST /api/execute/contract-call",
+    "Gas sponsorship covered fees; wallet held USDC for the swap",
+    "Use the swap transactionLink for DoraHacks submission proof"
+  ]
+}
