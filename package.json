@@ -1,0 +1,16 @@
+{
+  "name": "lifi-x-keeperhub",
+  "version": "0.1.0",
+  "private": true,
+  "description": "LI.FI quote/route planning with KeeperHub execution for the Agent Economy hackathon",
+  "type": "module",
+  "scripts": {
+    "quote": "echo \"Not implemented yet: LI.FI quote client\"",
+    "run:sim": "echo \"Not implemented yet: quote + KeeperHub simulate\"",
+    "run:exec": "echo \"Not implemented yet: quote + KeeperHub execute\""
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "license": "MIT"
+}
