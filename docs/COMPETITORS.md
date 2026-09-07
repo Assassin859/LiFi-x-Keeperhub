@@ -112,7 +112,7 @@ Naive “signed but not executed” is almost always wrong because Safe nonces a
 | 2 | One real KeeperHub settle with quote id + execution id + explorer | **Done** — [PROOF.md](PROOF.md) |
 | 3 | Demo video stating remove test: no LI.FI quote → nothing to send | **Todo** |
 | 4 | DoraHacks **main** BUIDL submitted (editable until deadline) | **Todo** |
-| 5 | Optional: named refusals + small rederive/fixture | Partial — `fixtures/proof-run.json` |
+| 5 | Optional: named refusals + small rederive/fixture | **Done** — refusals + `pnpm proof:check` |
 
 Bounty = separate BUIDL. First-class Swap/Bridge + gas top-up platform ask = Discord greenlight after demo exists — not the main-track win condition.
 

@@ -8,8 +8,8 @@ import {
   assertChainId,
   assertEvmAddress,
 } from "../config/validate.js";
+import { RefusalCode, RefusalError, asRefusal } from "../errors/refusal.js";
 import {
-  KeeperhubApiError,
   KeeperhubClient,
   type BroadcastBody,
   type SimulateBody,
@@ -116,7 +116,7 @@ export async function pipelineSim(overrides: PipelineOverrides = {}) {
         });
         continue;
       }
-      throw err;
+      throw asRefusal(err);
     }
   }
 
@@ -143,7 +143,10 @@ export async function pipelineExec(
   },
 ) {
   if (!opts.confirm) {
-    throw new Error("Broadcast requires confirm: true");
+    throw new RefusalError(
+      RefusalCode.CONFIRM_DENIED,
+      "Broadcast requires confirm: true",
+    );
   }
 
   const params = resolveQuoteParams(overrides);
@@ -176,7 +179,8 @@ export async function pipelineExec(
           body.from.toLowerCase() !== params.fromAddress.toLowerCase() &&
           !opts.allowFromMismatch
         ) {
-          throw new Error(
+          throw new RefusalError(
+            RefusalCode.WALLET_MISMATCH,
             `LIFI_FROM_ADDRESS (${params.fromAddress}) != KeeperHub org wallet (${body.from})`,
           );
         }
@@ -190,7 +194,7 @@ export async function pipelineExec(
             message,
           );
         if (allowanceGap) continue;
-        throw err;
+        throw asRefusal(err);
       }
     }
   }
@@ -199,25 +203,37 @@ export async function pipelineExec(
 
   for (const step of plan) {
     const idempotencyKey = `lifi-x-kh:${sanitizeId(quoteId)}:${step.kind}:${runId}`;
-    const broadcast = await client.contractCall({
-      chainId: step.call.chainId,
-      contractAddress: step.call.contractAddress,
-      functionName: step.call.functionName,
-      functionArgs: step.call.functionArgs,
-      abi: step.call.abi,
-      ...(step.call.value ? { value: step.call.value } : {}),
-      idempotencyKey,
-    });
+    let broadcast;
+    try {
+      broadcast = await client.contractCall({
+        chainId: step.call.chainId,
+        contractAddress: step.call.contractAddress,
+        functionName: step.call.functionName,
+        functionArgs: step.call.functionArgs,
+        abi: step.call.abi,
+        ...(step.call.value ? { value: step.call.value } : {}),
+        idempotencyKey,
+      });
+    } catch (err) {
+      throw new RefusalError(
+        RefusalCode.KEEPERHUB_ERROR,
+        err instanceof Error ? err.message : String(err),
+        { step: step.kind },
+      );
+    }
     if (broadcast.mode !== "broadcast") {
-      throw new Error("Expected broadcast response");
+      throw new RefusalError(
+        RefusalCode.KEEPERHUB_ERROR,
+        "Expected broadcast response",
+      );
     }
     const body = broadcast.body as BroadcastBody;
     const executionId = body.executionId;
     if (!executionId) {
-      throw new KeeperhubApiError(
+      throw new RefusalError(
+        RefusalCode.KEEPERHUB_ERROR,
         `No executionId: ${JSON.stringify(body).slice(0, 300)}`,
-        broadcast.status,
-        body,
+        { status: broadcast.status, body },
       );
     }
     const polled = await client.pollExecutionStatus(executionId);
@@ -236,8 +252,10 @@ export async function pipelineExec(
       error: polled.body.error ?? null,
     });
     if (st === "failed") {
-      throw new Error(
+      throw new RefusalError(
+        RefusalCode.STEP_FAILED,
         `${step.kind} failed (${executionId}): ${JSON.stringify(polled.body.error ?? polled.body).slice(0, 400)}`,
+        { executionId, step: step.kind },
       );
     }
   }

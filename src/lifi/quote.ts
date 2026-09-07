@@ -1,4 +1,5 @@
 import type { AppEnv } from "../config/env.js";
+import { RefusalCode, RefusalError } from "../errors/refusal.js";
 import { fetchWithTimeout } from "../http/fetch.js";
 
 export type LifiTransactionRequest = {
@@ -64,8 +65,10 @@ function assertExecutableQuote(quote: LifiQuote): void {
   const to = tx?.to;
   const data = tx?.data;
   if (!to || !data) {
-    throw new Error(
+    throw new RefusalError(
+      RefusalCode.NO_ROUTE,
       "Quote has no transactionRequest (no executable route)",
+      { quoteId: quote.id ?? null },
     );
   }
 }
@@ -104,7 +107,11 @@ export async function getQuote(params: QuoteParams): Promise<LifiQuote> {
       typeof body === "string"
         ? body.slice(0, 400)
         : JSON.stringify(body).slice(0, 400);
-    throw new Error(`LI.FI quote failed (${response.status}): ${snippet}`);
+    throw new RefusalError(
+      RefusalCode.NO_ROUTE,
+      `LI.FI quote failed (${response.status}): ${snippet}`,
+      { status: response.status },
+    );
   }
 
   const quote = body as LifiQuote;

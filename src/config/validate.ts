@@ -1,10 +1,13 @@
+import { RefusalCode, RefusalError } from "../errors/refusal.js";
+
 const ADDRESS_RE = /^0x[a-fA-F0-9]{40}$/;
 const POSITIVE_INT_RE = /^\d+$/;
 const AMOUNT_RE = /^\d+$/;
 
 export function assertEvmAddress(label: string, value: string): void {
   if (!ADDRESS_RE.test(value)) {
-    throw new Error(
+    throw new RefusalError(
+      RefusalCode.INVALID_INPUT,
       `Invalid ${label}: expected 0x + 40 hex chars, got "${value}"`,
     );
   }
@@ -12,13 +15,17 @@ export function assertEvmAddress(label: string, value: string): void {
 
 export function assertChainId(label: string, value: string): void {
   if (!POSITIVE_INT_RE.test(value)) {
-    throw new Error(`Invalid ${label}: expected numeric chain id, got "${value}"`);
+    throw new RefusalError(
+      RefusalCode.INVALID_INPUT,
+      `Invalid ${label}: expected numeric chain id, got "${value}"`,
+    );
   }
 }
 
 export function assertAmount(label: string, value: string): void {
   if (!AMOUNT_RE.test(value) || value === "0") {
-    throw new Error(
+    throw new RefusalError(
+      RefusalCode.INVALID_INPUT,
       `Invalid ${label}: expected positive integer (smallest units), got "${value}"`,
     );
   }
@@ -32,7 +39,8 @@ export function assertChainAllowed(
   allowMainnet: boolean,
 ): void {
   if (!allowMainnet && MAINNET_CHAIN_IDS.has(chainId)) {
-    throw new Error(
+    throw new RefusalError(
+      RefusalCode.CHAIN_NOT_ALLOWED,
       `Chain ${chainId} is blocked (ALLOW_MAINNET=false). Set ALLOW_MAINNET=true to use Ethereum mainnet.`,
     );
   }

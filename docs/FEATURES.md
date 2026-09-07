@@ -106,10 +106,10 @@ What good main-track submissions emphasize:
 | Measurable claim | Quote id + KeeperHub execution id + explorer link side by side ([PROOF.md](PROOF.md)) |
 | Upstream filings optional | Feature ask above; not required for main-track submit |
 
-gavel’s bar also includes **refusal as product** and a **re-derivable survey**. Optional follow-ups for us:
+gavel’s bar also includes **refusal as product** and a **re-derivable survey**. Shipped here:
 
-- Named refusal reasons (no route, sim revert, confirm denied, mid-step fail, chain not allowed)
-- A small re-derivable script that checks README claims against `fixtures/proof-run.json`
+- Named refusal codes (`NO_ROUTE`, `SIM_REVERT`, `CONFIRM_DENIED`, `WALLET_MISMATCH`, `CHAIN_NOT_ALLOWED`, `STEP_FAILED`, …) on API/CLI
+- `pnpm proof:check` — offline assert README + PROOF vs `fixtures/proof-run.json`
 
 ---
 

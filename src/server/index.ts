@@ -1,6 +1,7 @@
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
+import { RefusalCode, asRefusal, isRefusalError } from "../errors/refusal.js";
 import {
   dashboardDefaults,
   listRunArtifacts,
@@ -25,6 +26,15 @@ function bodyOverrides(body: Record<string, unknown>): PipelineOverrides {
   return o;
 }
 
+function refusalResponse(err: unknown) {
+  const refusal = asRefusal(err);
+  return {
+    refusal: refusal.code,
+    error: refusal.message,
+    ...(refusal.details !== undefined ? { details: refusal.details } : {}),
+  };
+}
+
 app.get("/api/health", (c) => c.json({ ok: true, service: "lifi-x-keeperhub" }));
 
 app.get("/api/defaults", (c) => c.json(dashboardDefaults()));
@@ -34,14 +44,20 @@ app.get("/api/runs", async (c) => {
   return c.json({ runs });
 });
 
+app.get("/api/refusals", (c) =>
+  c.json({
+    codes: Object.values(RefusalCode),
+    note: "Named refusals returned on /api/quote, /api/sim, /api/exec failures",
+  }),
+);
+
 app.post("/api/quote", async (c) => {
   try {
     const body = (await c.req.json().catch(() => ({}))) as Record<string, unknown>;
     const result = await pipelineQuote(bodyOverrides(body));
     return c.json(result);
   } catch (err) {
-    const message = err instanceof Error ? err.message : String(err);
-    return c.json({ error: message }, 400);
+    return c.json(refusalResponse(err), 400);
   }
 });
 
@@ -51,8 +67,7 @@ app.post("/api/sim", async (c) => {
     const result = await pipelineSim(bodyOverrides(body));
     return c.json(result);
   } catch (err) {
-    const message = err instanceof Error ? err.message : String(err);
-    return c.json({ error: message }, 400);
+    return c.json(refusalResponse(err), 400);
   }
 });
 
@@ -60,7 +75,13 @@ app.post("/api/exec", async (c) => {
   try {
     const body = (await c.req.json().catch(() => ({}))) as Record<string, unknown>;
     if (body.confirm !== true) {
-      return c.json({ error: "confirm must be true to broadcast" }, 400);
+      return c.json(
+        {
+          refusal: RefusalCode.CONFIRM_DENIED,
+          error: "confirm must be true to broadcast",
+        },
+        400,
+      );
     }
     const result = await pipelineExec(bodyOverrides(body), {
       confirm: true,
@@ -69,8 +90,8 @@ app.post("/api/exec", async (c) => {
     });
     return c.json(result);
   } catch (err) {
-    const message = err instanceof Error ? err.message : String(err);
-    return c.json({ error: message }, 400);
+    const status = isRefusalError(err) && err.code === RefusalCode.CONFIRM_DENIED ? 400 : 400;
+    return c.json(refusalResponse(err), status);
   }
 });
 

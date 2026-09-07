@@ -25,26 +25,32 @@ DoraHacks BUIDL for **main track only**. Create a **second BUIDL** for the Keepe
 | Swap execution id | `05lj3m301cqcrhdrd6yf7` |
 | Write-up | [PROOF.md](PROOF.md), [fixtures/proof-run.json](../fixtures/proof-run.json) |
 
-### Suggested form answers
+### Suggested form answers (copy-paste)
 
-- **Partner:** LI.FI (`li.quest` quote API / Jumper stack)
-- **What it does:** LI.FI returns the route + calldata; this client maps approve + swap into KeeperHub `contract-call`, simulates, confirms, broadcasts with idempotency, and polls status.
-- **Surfaces:** HTTP Direct Execution API (`/api/execute/contract-call`, status poll). Local CLI + dashboard for demo. Org API key (`kh_`).
-- **Network:** Base mainnet
-- **What still breaks / limits:** KeeperHub ≤ $100 stablecoin/tx; swap sim can look like allowance failure because approve is not persisted in dry-run; gas sponsorship ≠ free ETH balance; cross-chain bridge settle not yet the primary demo path; no deployed public hosted UI (local dashboard only).
+**Track:** Best Integration into a Live Project  
 
-### Video outline (suggested 2–3 min)
+**Project name:** LI.FI × KeeperHub  
 
-1. One sentence: LI.FI plans, KeeperHub settles
-2. Run quote → show LI.FI JSON (`id`, `tool`)
-3. Simulate / confirm
-4. Execute → explorer + KeeperHub status (or show committed proof if not re-broadcasting)
-5. Remove test (10–20s): break quote → nothing to send
-6. Optional: open Basescan swap tx
+**One-liner:** LI.FI plans the route; KeeperHub settles it.  
 
-### Remove test (mention in README or video)
+**Description:**  
+Integrates LI.FI’s live quote/route API (`li.quest`) with KeeperHub Direct Execution. Flow: quote → map approve + decode swap → simulate → human confirm → idempotent `contract-call` broadcast → status poll → explorer proof. Not an NL agent inventing calldata. Remove LI.FI and there is nothing to send.
 
-Disable LI.FI / break the quote URL → no calldata → no KeeperHub send.
+**Partner:** LI.FI (`li.quest` / Jumper stack)  
+
+**KeeperHub surfaces:** HTTP Direct Execution API (`POST /api/execute/contract-call`, status poll). Local CLI + dashboard for demo. Org API key (`kh_`).  
+
+**Network:** Base mainnet (`8453`)  
+
+**Source:** https://github.com/Assassin859/LiFi-x-Keeperhub  
+
+**Demo video:** (upload after recording — see [VIDEO.md](VIDEO.md))  
+
+**Transaction link:** https://basescan.org/tx/0x77833f89ea827e7b6982257975e1fb4a763da40b924027bcfecae2114f86bcb8  
+
+**What still breaks / limits:** KeeperHub ≤ $100 stablecoin/tx; swap dry-run can show allowance gap until approve is broadcast; gas sponsorship ≠ free ETH balance; cross-chain bridge settle not the primary demo; hosted public UI deferred (local dashboard works).  
+
+**Contact:** (your email + Discord/X)
 
 ## Bounty BUIDL (separate)
 

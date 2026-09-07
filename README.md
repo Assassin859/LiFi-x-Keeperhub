@@ -91,7 +91,8 @@ Submission needs: this source link, demo video, KeeperHub-executed tx link (swap
 | 2 Simulate (map + dry-run) | Done |
 | 3 Execute + poll + artifacts | Done (Base mainnet) |
 | Dashboard (API + Vite UI) | Done |
-| Demo video + DoraHacks BUIDL | **Todo** |
+| Named refusals + proof:check | Done |
+| Demo video + DoraHacks BUIDL | **Todo — see docs/VIDEO.md** |
 
 ---
 
@@ -109,6 +110,7 @@ pnpm install
 pnpm quote
 pnpm run:sim
 pnpm run:exec --confirm
+pnpm proof:check   # offline: README/PROOF match fixtures/proof-run.json
 
 # Dashboard (two terminals)
 pnpm api          # http://localhost:8787
@@ -123,6 +125,7 @@ Point `LIFI_API_BASE` at a broken URL (or unset a required quote field) → no `
 
 ## Docs
 
+- [Demo video script](docs/VIDEO.md)
 - [Live proof](docs/PROOF.md)
 - [Hackathon brief and goals](docs/HACKATHON.md)
 - [Architecture](docs/ARCHITECTURE.md)

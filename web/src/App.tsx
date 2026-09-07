@@ -30,9 +30,10 @@ async function api<T>(path: string, init?: RequestInit): Promise<T> {
     headers: { "Content-Type": "application/json", ...(init?.headers ?? {}) },
     ...init,
   });
-  const data = (await res.json()) as T & { error?: string };
+  const data = (await res.json()) as T & { error?: string; refusal?: string };
   if (!res.ok) {
-    throw new Error(data.error ?? `Request failed (${res.status})`);
+    const refusal = data.refusal ? `[${data.refusal}] ` : "";
+    throw new Error(`${refusal}${data.error ?? `Request failed (${res.status})`}`);
   }
   return data;
 }
@@ -98,7 +99,7 @@ export function App() {
           ? { ...form, confirm: true }
           : { ...form };
       if (kind === "exec" && !confirm) {
-        throw new Error("Check “I confirm broadcast” before Execute.");
+        throw new Error("[CONFIRM_DENIED] Check “I confirm broadcast” before Execute.");
       }
       const data = await api<unknown>(path, {
         method: "POST",

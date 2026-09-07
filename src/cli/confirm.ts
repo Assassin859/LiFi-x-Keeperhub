@@ -1,5 +1,6 @@
 import { createInterface } from "node:readline/promises";
 import { stdin as input, stdout as output } from "node:process";
+import { RefusalCode, RefusalError } from "../errors/refusal.js";
 
 export type ConfirmOptions = {
   requireConfirm: boolean;
@@ -34,7 +35,10 @@ export async function ensureBroadcastConfirmed(
         "Broadcast on-chain via KeeperHub? Type y to confirm: ",
       );
       if (answer.trim().toLowerCase() !== "y") {
-        throw new Error("Broadcast cancelled (confirmation not given).");
+        throw new RefusalError(
+          RefusalCode.CONFIRM_DENIED,
+          "Broadcast cancelled (confirmation not given).",
+        );
       }
     } finally {
       rl.close();
@@ -42,7 +46,8 @@ export async function ensureBroadcastConfirmed(
     return;
   }
 
-  throw new Error(
+  throw new RefusalError(
+    RefusalCode.CONFIRM_DENIED,
     "Broadcast requires confirmation. Re-run with --confirm (or set REQUIRE_CONFIRM=false for non-mainnet demos).",
   );
 }
