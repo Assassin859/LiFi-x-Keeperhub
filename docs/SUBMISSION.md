@@ -5,33 +5,69 @@ DoraHacks BUIDL for **main track only**. Create a **second BUIDL** for the Keepe
 ## Main BUIDL (this repo)
 
 - [ ] Track selected: Best Integration into a Live Project
-- [ ] Source: https://github.com/Assassin859/LiFi-x-Keeperhub
+- [x] Source: https://github.com/Assassin859/LiFi-x-Keeperhub
 - [ ] Demo video (integration running end-to-end)
-- [ ] Transaction executed through KeeperHub (explorer link)
+- [x] Transaction executed through KeeperHub (explorer link)
 - [ ] Form: partner = LI.FI; what the integration does
-- [ ] Form: KeeperHub surfaces used (MCP / API / CLI / audit)
-- [ ] Form: testnet or mainnet
+- [ ] Form: KeeperHub surfaces used (HTTP Direct Execution + local CLI/dashboard; not MCP for this path)
+- [x] Form: **mainnet** (Base `8453`)
 - [ ] Form: what still breaks (candid)
 - [ ] Reachable contact (email + Discord/X)
 
-### Video outline (suggested 2–3 min)
+### Proof links (paste into form)
 
-1. One sentence: LI.FI plans, KeeperHub settles
-2. Run quote → show LI.FI JSON
-3. Simulate / confirm
-4. Execute → explorer + KeeperHub status
-5. Optional failure path (10–20s)
+| Item | Value |
+|---|---|
+| Repo | https://github.com/Assassin859/LiFi-x-Keeperhub |
+| **Swap tx (primary)** | https://basescan.org/tx/0x77833f89ea827e7b6982257975e1fb4a763da40b924027bcfecae2114f86bcb8 |
+| Approve tx | https://basescan.org/tx/0x4bfcad4ea65547526e54d9e6c431e4aba4af7205a0fbdef30018640bc7f28ebc |
+| Quote id | `c10dd97b-ee60-47f6-b7b7-9b7beafb971d:0` |
+| Swap execution id | `05lj3m301cqcrhdrd6yf7` |
+| Write-up | [PROOF.md](PROOF.md), [fixtures/proof-run.json](../fixtures/proof-run.json) |
 
-### Remove test (mention in README or video)
+### Suggested form answers (copy-paste)
 
-Disable LI.FI / break the quote URL → no calldata → no KeeperHub send.
+**Track:** Best Integration into a Live Project  
+
+**Project name:** LI.FI × KeeperHub  
+
+**One-liner:** LI.FI plans the route; KeeperHub settles it.  
+
+**Description:**  
+Integrates LI.FI’s live quote/route API (`li.quest`) with KeeperHub Direct Execution. Flow: quote → map approve + decode swap → simulate → human confirm → idempotent `contract-call` broadcast → status poll → explorer proof. Not an NL agent inventing calldata. Remove LI.FI and there is nothing to send.
+
+**Partner:** LI.FI (`li.quest` / Jumper stack)  
+
+**KeeperHub surfaces:** HTTP Direct Execution API (`POST /api/execute/contract-call`, status poll). Local CLI + dashboard for demo. Org API key (`kh_`).  
+
+**Network:** Base mainnet (`8453`)  
+
+**Source:** https://github.com/Assassin859/LiFi-x-Keeperhub  
+
+**Demo video:** (upload after recording — see [VIDEO.md](VIDEO.md))  
+
+**Transaction link:** https://basescan.org/tx/0x77833f89ea827e7b6982257975e1fb4a763da40b924027bcfecae2114f86bcb8  
+
+**What still breaks / limits:** KeeperHub ≤ $100 stablecoin/tx; swap dry-run can show allowance gap until approve is broadcast; gas sponsorship ≠ free ETH balance; cross-chain bridge settle not the primary demo; hosted public UI deferred (local dashboard works).  
+
+**Contact:** (your email + Discord/X)
 
 ## Bounty BUIDL (separate)
 
+Your KeeperHub feature PRs are **already merged** — use them as the bounty submission (second BUIDL):
+
+| PR | Title | Status |
+|---|---|---|
+| [#2213](https://github.com/KeeperHub/keeperhub/pull/2213) | protocol writes return `executionId` / status | **Merged** |
+| [#2215](https://github.com/KeeperHub/keeperhub/pull/2215) | MCP Idempotency-Key on `call_workflow` | **Merged** |
+| [#2217](https://github.com/KeeperHub/keeperhub/pull/2217) | For Each stops on iteration failure | **Merged** |
+
 - [ ] Track: Best KeeperHub Feature
-- [ ] Links to open or merged PRs
+- [ ] Links to the three merged PRs above
 - [ ] 60–90s capture of feature / tests (per KeeperHub guidance)
 - [ ] Tx link only if the feature has an onchain surface
+
+Optional platform asks (after main video): Swap/Bridge UI+API, stablecoin→gas top-up, MCP `execute_swap` — [FEATURES.md](FEATURES.md).
 
 ## Deadlines
 
@@ -42,3 +78,5 @@ Disable LI.FI / break the quote URL → no calldata → no KeeperHub send.
 
 - Hackathon: https://dorahacks.io/hackathon/agent-economy/detail
 - KeeperHub Discord: prefer DM / office hours for strategy; general for logistics only
+
+See [COMPETITORS.md](COMPETITORS.md), [CONTEXT.md](CONTEXT.md).
