@@ -1,0 +1,44 @@
+{
+  "kind": "cross-chain-quote-sample",
+  "createdAt": "2026-09-12T14:41:11.763Z",
+  "params": {
+    "fromChain": "8453",
+    "toChain": "42161",
+    "fromToken": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+    "toToken": "0xaf88d065e77c8cC2239327C5EDb3A432268e5831",
+    "fromAmount": "1000000",
+    "fromAddress": "0xc63a364f8bbaa6be263f577762e7c180a68b9fac"
+  },
+  "quoteId": "b4ef4ccb-4f7b-4577-8c78-8a8672ee9e32:0",
+  "tool": "eco",
+  "hasTransactionRequest": true,
+  "summary": {
+    "id": "b4ef4ccb-4f7b-4577-8c78-8a8672ee9e32:0",
+    "tool": "eco",
+    "action": {
+      "fromChainId": 8453,
+      "toChainId": 42161,
+      "fromToken": "USDC",
+      "toToken": "USDC",
+      "fromAmount": "1000000"
+    },
+    "steps": [
+      {
+        "tool": "feeCollection",
+        "type": "protocol"
+      },
+      {
+        "tool": "eco",
+        "type": "cross"
+      }
+    ],
+    "transactionRequest": {
+      "to": "0x1231DEB6f5749EF6cE6943a275A1D3E7486F4EaE",
+      "chainId": 8453,
+      "value": "0x0",
+      "dataLength": 3850
+    },
+    "approvalSpender": "0x1231DEB6f5749EF6cE6943a275A1D3E7486F4EaE",
+    "hasApprovalSpender": true
+  }
+}

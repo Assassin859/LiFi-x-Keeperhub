@@ -108,8 +108,10 @@ What good main-track submissions emphasize:
 
 gavel’s bar also includes **refusal as product** and a **re-derivable survey**. Shipped here:
 
-- Named refusal codes (`NO_ROUTE`, `SIM_REVERT`, `CONFIRM_DENIED`, `WALLET_MISMATCH`, `CHAIN_NOT_ALLOWED`, `STEP_FAILED`, …) on API/CLI
+- Named refusal codes (`NO_ROUTE`, `SIM_REVERT`, `CONFIRM_DENIED`, `WALLET_MISMATCH`, `CHAIN_NOT_ALLOWED`, `STEP_FAILED`, `UNCONFIRMED`, `INTENT_IN_FLIGHT`, …) on API/CLI
+- Intent-level pending lock + no retry on `failed`+hash ([RELIABILITY.md](RELIABILITY.md))
 - `pnpm proof:check` — offline assert README + PROOF vs `fixtures/proof-run.json`
+- `pnpm quote:bridge` — cross-chain LI.FI quote sample (no broadcast)
 
 ---
 

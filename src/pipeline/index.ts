@@ -17,6 +17,12 @@ import {
 import { summarizeQuote } from "../lifi/format.js";
 import { getQuote, type QuoteOverrides, type QuoteParams } from "../lifi/quote.js";
 import { buildSimulationPlan } from "../mapper/lifi-to-keeperhub.js";
+import {
+  buildIntentKey,
+  claimIntent,
+  clearIntent,
+  updateIntent,
+} from "./intent-lock.js";
 
 export type PipelineOverrides = QuoteOverrides;
 
@@ -202,62 +208,102 @@ export async function pipelineExec(
   const stepResults: Array<Record<string, unknown>> = [];
 
   for (const step of plan) {
-    const idempotencyKey = `lifi-x-kh:${sanitizeId(quoteId)}:${step.kind}:${runId}`;
-    let broadcast;
-    try {
-      broadcast = await client.contractCall({
-        chainId: step.call.chainId,
-        contractAddress: step.call.contractAddress,
-        functionName: step.call.functionName,
-        functionArgs: step.call.functionArgs,
-        abi: step.call.abi,
-        ...(step.call.value ? { value: step.call.value } : {}),
-        idempotencyKey,
+      const intentKey = buildIntentKey({
+        fromChain: params.fromChain,
+        toChain: params.toChain,
+        fromToken: params.fromToken,
+        toToken: params.toToken,
+        fromAmount: params.fromAmount,
+        fromAddress: params.fromAddress,
+        kind: step.kind,
       });
-    } catch (err) {
-      throw new RefusalError(
-        RefusalCode.KEEPERHUB_ERROR,
-        err instanceof Error ? err.message : String(err),
-        { step: step.kind },
-      );
-    }
-    if (broadcast.mode !== "broadcast") {
-      throw new RefusalError(
-        RefusalCode.KEEPERHUB_ERROR,
-        "Expected broadcast response",
-      );
-    }
-    const body = broadcast.body as BroadcastBody;
-    const executionId = body.executionId;
-    if (!executionId) {
-      throw new RefusalError(
-        RefusalCode.KEEPERHUB_ERROR,
-        `No executionId: ${JSON.stringify(body).slice(0, 300)}`,
-        { status: broadcast.status, body },
-      );
-    }
-    const polled = await client.pollExecutionStatus(executionId);
-    const st = polled.body.status ?? "unknown";
-    stepResults.push({
-      kind: step.kind,
-      functionName: step.call.functionName,
-      selector: step.selector ?? null,
-      idempotencyKey,
-      executionId,
-      status: st,
-      transactionHash:
-        polled.body.transactionHash ?? body.transactionHash ?? null,
-      transactionLink:
-        polled.body.transactionLink ?? body.transactionLink ?? null,
-      error: polled.body.error ?? null,
-    });
-    if (st === "failed") {
-      throw new RefusalError(
-        RefusalCode.STEP_FAILED,
-        `${step.kind} failed (${executionId}): ${JSON.stringify(polled.body.error ?? polled.body).slice(0, 400)}`,
-        { executionId, step: step.kind },
-      );
-    }
+      await claimIntent(intentKey, { quoteId, kind: step.kind, runId });
+
+      // Intent-scoped key (no fresh UUID) so KeeperHub + local lock dedupe re-clicks.
+      const idempotencyKey = `lifi-x-kh:${sanitizeId(quoteId)}:${step.kind}`;
+      let broadcast;
+      try {
+        broadcast = await client.contractCall({
+          chainId: step.call.chainId,
+          contractAddress: step.call.contractAddress,
+          functionName: step.call.functionName,
+          functionArgs: step.call.functionArgs,
+          abi: step.call.abi,
+          ...(step.call.value ? { value: step.call.value } : {}),
+          idempotencyKey,
+        });
+      } catch (err) {
+        throw new RefusalError(
+          RefusalCode.KEEPERHUB_ERROR,
+          err instanceof Error ? err.message : String(err),
+          { step: step.kind, intentKey },
+        );
+      }
+      if (broadcast.mode !== "broadcast") {
+        throw new RefusalError(
+          RefusalCode.KEEPERHUB_ERROR,
+          "Expected broadcast response",
+        );
+      }
+      const body = broadcast.body as BroadcastBody;
+      const executionId = body.executionId;
+      if (!executionId) {
+        throw new RefusalError(
+          RefusalCode.KEEPERHUB_ERROR,
+          `No executionId: ${JSON.stringify(body).slice(0, 300)}`,
+          { status: broadcast.status, body },
+        );
+      }
+
+      await updateIntent(intentKey, { executionId });
+
+      const polled = await client.pollExecutionStatus(executionId);
+      const st = polled.body.status ?? "unknown";
+      const transactionHash =
+        polled.body.transactionHash ?? body.transactionHash ?? null;
+      const transactionLink =
+        polled.body.transactionLink ?? body.transactionLink ?? null;
+
+      await updateIntent(intentKey, {
+        status: st,
+        transactionHash,
+        executionId,
+      });
+
+      stepResults.push({
+        kind: step.kind,
+        functionName: step.call.functionName,
+        selector: step.selector ?? null,
+        intentKey,
+        idempotencyKey,
+        executionId,
+        status: st,
+        transactionHash,
+        transactionLink,
+        error: polled.body.error ?? null,
+      });
+
+      // #2374 lesson: failed + hash (or explicit unconfirmed) is NOT safe to retry.
+      if (st === "unconfirmed" || (st === "failed" && transactionHash)) {
+        throw new RefusalError(
+          RefusalCode.UNCONFIRMED,
+          `${step.kind} is unconfirmed (status=${st}, hash=${transactionHash}). Do not re-broadcast — resolve on explorer / KeeperHub status.`,
+          { executionId, transactionHash, transactionLink, status: st },
+        );
+      }
+
+      if (st === "failed") {
+        await clearIntent(intentKey);
+        throw new RefusalError(
+          RefusalCode.STEP_FAILED,
+          `${step.kind} failed (${executionId}): ${JSON.stringify(polled.body.error ?? polled.body).slice(0, 400)}`,
+          { executionId, step: step.kind },
+        );
+      }
+
+      if (st === "completed") {
+        await clearIntent(intentKey);
+      }
   }
 
   const artifact = {
@@ -266,6 +312,11 @@ export async function pipelineExec(
     fromAddress: params.fromAddress,
     steps: stepResults,
     createdAt: new Date().toISOString(),
+    safety: {
+      intentLock: true,
+      noRetryOnUnconfirmed: true,
+      idempotencyScopedToQuoteStep: true,
+    },
   };
 
   const dir = resolve(process.cwd(), "artifacts");

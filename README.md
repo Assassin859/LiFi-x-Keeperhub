@@ -92,7 +92,9 @@ Submission needs: this source link, demo video, KeeperHub-executed tx link (swap
 | 3 Execute + poll + artifacts | Done (Base mainnet) |
 | Dashboard (API + Vite UI) | Done |
 | Named refusals + proof:check | Done |
-| Demo video + DoraHacks BUIDL | **Todo — see docs/VIDEO.md** |
+| Intent lock + UNCONFIRMED (no false-failed retry) | Done |
+| Cross-chain quote sample (`pnpm quote:bridge`) | Done |
+| Demo video + DoraHacks BUIDL | **You — leave for last** |
 
 ---
 
@@ -125,6 +127,7 @@ Point `LIFI_API_BASE` at a broken URL (or unset a required quote field) → no `
 
 ## Docs
 
+- [Reliability / no double-spend](docs/RELIABILITY.md)
 - [Demo video script](docs/VIDEO.md)
 - [Live proof](docs/PROOF.md)
 - [Hackathon brief and goals](docs/HACKATHON.md)

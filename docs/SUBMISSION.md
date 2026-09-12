@@ -54,8 +54,16 @@ Integrates LI.FI’s live quote/route API (`li.quest`) with KeeperHub Direct Exe
 
 ## Bounty BUIDL (separate)
 
+Your KeeperHub feature PRs are **already merged** — use them as the bounty submission (second BUIDL):
+
+| PR | Title | Status |
+|---|---|---|
+| [#2213](https://github.com/KeeperHub/keeperhub/pull/2213) | protocol writes return `executionId` / status | **Merged** |
+| [#2215](https://github.com/KeeperHub/keeperhub/pull/2215) | MCP Idempotency-Key on `call_workflow` | **Merged** |
+| [#2217](https://github.com/KeeperHub/keeperhub/pull/2217) | For Each stops on iteration failure | **Merged** |
+
 - [ ] Track: Best KeeperHub Feature
-- [ ] Links to open or merged PRs
+- [ ] Links to the three merged PRs above
 - [ ] 60–90s capture of feature / tests (per KeeperHub guidance)
 - [ ] Tx link only if the feature has an onchain surface
 

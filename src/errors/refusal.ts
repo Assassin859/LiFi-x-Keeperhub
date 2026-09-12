@@ -8,6 +8,8 @@ export const RefusalCode = {
   CONFIRM_DENIED: "CONFIRM_DENIED",
   WALLET_MISMATCH: "WALLET_MISMATCH",
   STEP_FAILED: "STEP_FAILED",
+  UNCONFIRMED: "UNCONFIRMED",
+  INTENT_IN_FLIGHT: "INTENT_IN_FLIGHT",
   KEEPERHUB_ERROR: "KEEPERHUB_ERROR",
 } as const;
 
@@ -44,6 +46,12 @@ export function asRefusal(err: unknown): RefusalError {
 
   if (/confirmation|confirm must be true|Broadcast cancelled|Broadcast requires/i.test(message)) {
     return new RefusalError(RefusalCode.CONFIRM_DENIED, message);
+  }
+  if (/Pending write already claimed|INTENT_IN_FLIGHT|in flight/i.test(message)) {
+    return new RefusalError(RefusalCode.INTENT_IN_FLIGHT, message);
+  }
+  if (/unconfirmed|could not confirm|receipt unreadable/i.test(message)) {
+    return new RefusalError(RefusalCode.UNCONFIRMED, message);
   }
   if (/LIFI_FROM_ADDRESS|org wallet|mismatch/i.test(message)) {
     return new RefusalError(RefusalCode.WALLET_MISMATCH, message);

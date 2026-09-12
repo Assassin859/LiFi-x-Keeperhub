@@ -11,6 +11,7 @@
     "run:sim": "tsx src/cli/run-sim.ts",
     "run:exec": "tsx src/cli/run-exec.ts",
     "proof:check": "tsx scripts/proof-check.ts",
+    "quote:bridge": "tsx scripts/quote-bridge.ts",
     "api": "tsx src/server/index.ts",
     "dashboard": "vite",
     "dev": "tsx src/server/index.ts"
